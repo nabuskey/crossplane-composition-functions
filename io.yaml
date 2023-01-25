@@ -1,0 +1,70 @@
+apiVersion: apiextensions.crossplane.io/v1alpha1
+kind: FunctionIO
+config:
+  apiVersion: awsblueprints.io/v1alpha1
+  kind: Config
+  metadata:
+    name: example-dev
+  spec:
+    prefix: dev
+    region: us-west-2
+observed:
+  composite:
+    resource:
+      apiVersion: awsblueprints.io/v1alpha1
+      kind: XCDN
+      metadata:
+        name: cdn-oi2m19
+      spec:
+        resourceConfig:
+          providerConfigName: default
+          region: us-east-6
+        parameters:
+          storageGB: 20
+        compositionSelector:
+          matchLabels:
+            provider: gcp
+      status:
+        conditions:
+          - type: Ready
+            status: True
+    connectionDetails:
+      - name: uri
+        value: postgresql://db.example.org:5432
+  resources:
+    - name: cloudsqlinstance
+      resource:
+        apiVersion: database.gcp.crossplane.io/v1beta1
+        kind: CloudSQLInstance
+        metadata:
+          labels:
+            my: label
+        spec:
+          forProvider:
+            databaseVersion: POSTGRES_9_6
+            region: us-central1
+            settings:
+              tier: db-custom-1-3840
+              dataDiskType: PD_SSD
+              dataDiskSizeGb: 20
+          writeConnectionSecretToRef:
+            namespace: crossplane-system
+            name: cloudsqlpostgresql-conn
+    - name: cloudsqlinstance2
+      resource:
+        apiVersion: database.gcp.crossplane.io/v1beta1
+        kind: CloudSQLInstance
+        metadata:
+          labels:
+            my-ip: "256.256.256.256"
+        spec:
+          forProvider:
+            databaseVersion: POSTGRES_9_6
+            region: us-central1
+            settings:
+              tier: db-custom-1-3840
+              dataDiskType: PD_SSD
+              dataDiskSizeGb: 20
+          writeConnectionSecretToRef:
+            namespace: crossplane-system
+            name: cloudsqlpostgresql-conn

@@ -1,0 +1,7 @@
+apiVersion: meta.pkg.crossplane.io/v1alpha1
+kind: Function
+metadata:
+  name: my-function
+  annotations:
+    meta.crossplane.io/source: https://somewhere
+    meta.crossplane.io/description: An example function
